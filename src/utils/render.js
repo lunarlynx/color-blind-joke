@@ -3,6 +3,17 @@ const height = 500;
 const totalNumber = 15000;
 const protection = 100000;
 
+const colorsRed = ["#f49427", "#c9785c", "#fece00", "#f1b181"];
+const colorsGreen = ["#7ba55e", "#89b370", "#b6c674"];
+
+const generateBigCircles = (fontSize) => {
+    return [fontSize / 20, fontSize / 25, fontSize / 30, fontSize / 35];
+}
+
+const generateSmallCircles = (fontSize) => {
+    return [fontSize / 50, fontSize / 60];
+}
+
 export const checkBordersSquare = circle => {
     if (circle.x + circle.r > width) {
         return false;
@@ -23,18 +34,18 @@ export const checkBordersCircle = (circle, p5) => {
     return p5.dist(circle.x, circle.y, width / 2, width / 2) + circle.r <= (width / 2);
 }
 
-
-export const setup = (p5, canvasParentRef) => {
-    p5.createCanvas(width, height).parent(canvasParentRef);
-    drawAllCircles(p5);
-};
-
 export const drawAllCircles = (p5, text) => {
     let circles = [];
-    drawText(p5, [12, 17, 22, 25], circles, text);
-    drawText(p5, [5, 8], circles, text);
-    draw(p5, [12, 17, 22, 25], ["#850909"], circles, checkBordersCircle);
-    draw(p5, [5, 8], ["#850909"], circles, checkBordersCircle);
+
+    let [pg, fontSize] = createVirtualText(p5, text);
+
+    drawText(p5, pg, generateBigCircles(fontSize), circles, text);
+    drawText(p5, pg, generateSmallCircles(fontSize), circles, text);
+
+    let checkBorders = (circle, p5) => checkBordersCircle(circle, p5) && getCheckBordersText(pg, false)(circle);
+
+    draw(p5, generateBigCircles(fontSize), colorsRed, circles, checkBorders);
+    draw(p5, generateSmallCircles(fontSize), colorsRed, circles, checkBorders);
 
     for (let i = 0; i < circles.length; i++) {
         let circle = circles[i];
@@ -44,22 +55,22 @@ export const drawAllCircles = (p5, text) => {
     }
 };
 
-function drawText(p5, numbers, circles, text) {
-    let pg = createVirtualText(p5, text);
-
-    draw(p5, numbers, ["#076A07"], circles, (circle) => {
+function getCheckBordersText(pg, eq) {
+    return (circle) => {
         let ourCircleColors = pg.get(circle.x, circle.y);
-
-        return ourCircleColors[0] === 0;
-    });
+        let result = ourCircleColors[0] === 0;
+        return result === eq;
+    };
 }
 
+function drawText(p5, pg, numbers, circles) {
+    draw(p5, numbers, colorsGreen, circles, getCheckBordersText(pg, true));
+}
 
 
 function createVirtualText(p5, text) {
     const pg = p5.createGraphics(500, 500);
 
-    console.log("Render");
     pg.background("transparent");
     pg.textFont('Arial');
     pg.textStyle(p5.BOLD);
@@ -73,7 +84,7 @@ function createVirtualText(p5, text) {
     let xStart = 250 - (textWidth / 2);
     let yStart = 250 + (textHeight / 2);
     pg.text(text, xStart, yStart);
-    return pg;
+    return [pg, fontSize];
 }
 
 function getFontSize(p5, text) {
@@ -92,7 +103,6 @@ function getFontSize(p5, text) {
         }
     }
 }
-
 
 
 function getmeSomeValue() {
