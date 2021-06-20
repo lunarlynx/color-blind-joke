@@ -41,10 +41,10 @@ const WorkArea = ({text}) => {
                 {/*<Sketch setup={setup}/>*/}
                 <Sketch setup={setup} draw={draw}/>
                 <button onClick={downloadHandler}>Download PNG</button>
-                <button onClick={unblindHandler}>Unblind</button>
+                <button onClick={unblindHandler}>{unblind ? "Blind" : "Unblind"}</button>
             </div>
         </>)
-}
+};
 
 
 export default WorkArea;

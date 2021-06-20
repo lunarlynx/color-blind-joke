@@ -54,9 +54,15 @@ button:hover {
   transition: .3s ease all;
 }
 
+label {
+  display: block;
+}
+
 input {
+  display: block;
+  max-width: 20%;
   padding: 16px 8px;
-  margin: 8px auto;
+  margin: 8px auto 0;
   border-radius: 8px;
   border: 1px solid #333;
   outline: 0;
@@ -68,4 +74,10 @@ input {
 input:hover {
   border: 1px solid #000;
   transition: .3s ease all;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #525252;
+  display: block;
 }
