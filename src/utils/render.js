@@ -1,10 +1,15 @@
-const width = 500;
-const height = 500;
-const totalNumber = 15000;
-const protection = 100000;
+export const width = 700;
+export const height = 700;
+const totalNumber = 2000;
+const protection = 50000;
 
 const colorsRed = ["#f49427", "#c9785c", "#fece00", "#f1b181"];
 const colorsGreen = ["#7ba55e", "#89b370", "#b6c674"];
+
+// const colorsRed = ["#d98b8b"];
+// const colorsGreen = ["#000000"];
+
+
 
 const generateBigCircles = (fontSize) => {
     return [fontSize / 20, fontSize / 25, fontSize / 30, fontSize / 35];
@@ -34,22 +39,32 @@ export const checkBordersCircle = (circle, p5) => {
     return p5.dist(circle.x, circle.y, width / 2, width / 2) + circle.r <= (width / 2);
 }
 
-export const drawAllCircles = (p5, text) => {
+export function generateCircles(p5, text) {
     let circles = [];
 
     let [pg, fontSize] = createVirtualText(p5, text);
+    let fontSizeForCircles = fontSize;
+    if (text.length <= 2) {
+        [, fontSizeForCircles] = createVirtualText(p5, "aaa");
+    }
 
-    drawText(p5, pg, generateBigCircles(fontSize), circles, text);
-    drawText(p5, pg, generateSmallCircles(fontSize), circles, text);
+    let forBigCircles = generateBigCircles(fontSizeForCircles);
+    let forSmallCircles = generateSmallCircles(fontSizeForCircles);
+    generateText(p5, pg, forBigCircles, circles, text);
+    generateText(p5, pg, forSmallCircles, circles, text);
 
     let checkBorders = (circle, p5) => checkBordersCircle(circle, p5) && getCheckBordersText(pg, false)(circle);
 
-    draw(p5, generateBigCircles(fontSize), colorsRed, circles, checkBorders);
-    draw(p5, generateSmallCircles(fontSize), colorsRed, circles, checkBorders);
+    generate(p5, forBigCircles, colorsRed, circles, checkBorders);
+    generate(p5, forSmallCircles, colorsRed, circles, checkBorders);
+    return circles;
+}
 
+export const drawAllCircles = (p5, circles, unblind) => {
     for (let i = 0; i < circles.length; i++) {
         let circle = circles[i];
-        p5.fill(circle.color);
+        let color = unblind ? (colorsRed.includes(circle.color) ? "#d98b8b" : "#000000") : circle.color;
+        p5.fill(color);
         p5.ellipse(circle.x, circle.y,
             circle.r * 2, circle.r * 2);
     }
@@ -63,13 +78,13 @@ function getCheckBordersText(pg, eq) {
     };
 }
 
-function drawText(p5, pg, numbers, circles) {
-    draw(p5, numbers, colorsGreen, circles, getCheckBordersText(pg, true));
+function generateText(p5, pg, numbers, circles) {
+    generate(p5, numbers, colorsGreen, circles, getCheckBordersText(pg, true));
 }
 
 
 function createVirtualText(p5, text) {
-    const pg = p5.createGraphics(500, 500);
+    const pg = p5.createGraphics(width, height);
 
     pg.background("transparent");
     pg.textFont('Arial');
@@ -81,8 +96,8 @@ function createVirtualText(p5, text) {
     let textWidth = pg.textWidth(text);
     let textHeight = pg.textWidth("М");
 
-    let xStart = 250 - (textWidth / 2);
-    let yStart = 250 + (textHeight / 2);
+    let xStart = (width / 2) - (textWidth / 2);
+    let yStart = (height / 2) + (textHeight / 2);
     pg.text(text, xStart, yStart);
     return [pg, fontSize];
 }
@@ -93,10 +108,10 @@ function getFontSize(p5, text) {
         p5.textSize(candidate + 1);
         let textWidth = p5.textWidth(text);
         let textHeight = p5.textWidth("М");
-        let xStart = 250 - (textWidth / 2);
-        let yStart = 250 + (textHeight / 2);
+        let xStart = (width / 2) - (textWidth / 2);
+        let yStart = (height / 2) + (textHeight / 2);
 
-        if (p5.dist(250, 250, xStart, yStart) <= 250) {
+        if (p5.dist(width / 2, height / 2, xStart, yStart) <= width / 2) {
             candidate = candidate + 1;
         } else {
             return candidate;
@@ -109,7 +124,7 @@ function getmeSomeValue() {
     return false;
 }
 
-export const draw = (p5, acceptableRadius, colors, circles, checkBorders) => {
+export const generate = (p5, acceptableRadius, colors, circles, checkBorders) => {
     let counter = 0;
 
     // populate circles array
