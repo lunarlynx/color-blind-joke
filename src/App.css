@@ -1,40 +1,62 @@
+html, body {
+  padding: 0;
+  margin: 0;
+  font-family: Arial;
+  font-size: 16px;
+  height: 100vh;
+}
+
+body > div,
 .App {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.logo {
+  display: block;
+  text-align: center;
+  width: auto;
+  margin: 0 auto 8px;
+  font-family: monospace;
+  color: #f1f1f1;
+  text-decoration: none;
+  background: #444;
+}
+
+.logo > * {
+  display: block;
+  margin: 4px auto;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+.container .col-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 20%;
+  min-width: 200px;
+  align-items: center;
+  background: #333;
+  color: #f1f1f1;
+}
+
+.container .col-left > * {
+  width: 100%;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+.container .col-right {
+  position: relative;
+  width: 100%;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  display: flex;
+  text-align: center;
+  justify-content: space-between;
 }
 
 button {
@@ -43,41 +65,74 @@ button {
   border-radius: 8px;
   border: 0;
   outline: 0;
-  background: #333;
+  background: #b47878;
   color: #f1f1f1;
   cursor: pointer;
+  width: 90%;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 button:hover {
-  background: #f1f1f1;
-  color: #333;
+  background: #a37071;
+  color: #f1f1f1;
   transition: .3s ease all;
 }
 
-label {
-  display: block;
+.form .form-items {
+  max-width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-input {
-  display: block;
-  max-width: 20%;
+.form input {
   padding: 16px 8px;
-  margin: 8px auto 0;
+  margin: 8px auto 2px;
   border-radius: 8px;
   border: 1px solid #333;
   outline: 0;
   background: #f1f1f1;
   color: #333;
-  cursor: pointer;
+  min-width: 90%;
 }
 
-input:hover {
+.form input:hover {
   border: 1px solid #000;
   transition: .3s ease all;
 }
 
-.subtitle {
+.form .subtitle {
   font-size: 12px;
-  color: #525252;
-  display: block;
+  color: #b3b3b3;
+}
+
+.col-right .download-menu {
+  display: flex;
+  flex-direction: column;
+  width: 10%;
+  min-width: 80px;
+}
+
+.col-right #defaultCanvas0 {
+  width: 100vh !important;
+  height: 100vh !important;
+}
+
+.col-right .react-p5 {
+  width: 100%;
+}
+
+div[aria-busy="true"] {
+  display: flex;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }

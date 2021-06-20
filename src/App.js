@@ -20,11 +20,29 @@ function App() {
 
     return (
         <div className="App">
-            <label>Enter your text:</label>
-            <input onChange={userWord} max={10} min={1} />
-            <span class="subtitle">max length 10 symbols</span>
-            <button onClick={sendWord}>Generate!</button>
-            {inputValue && renderedValue > 0 && <WorkArea key={renderedValue} text={inputValue.toUpperCase()} />}
+            <div className="container">
+                <div className="col-left">
+                    <a href="#" className="logo">
+                        <img src="./logo.svg" width="50" height="50"/>
+                        <span>color-blind-joke</span>
+                    </a>
+                    <div className="form">
+                        <div className="form-items">
+                            <label>Enter your text:</label>
+                            <input onChange={userWord} max={10} min={1}/>
+                            <span className="subtitle">max length 10 symbols</span>
+                        </div>
+                    </div>
+                    <div className="button-bar">
+                        <button onClick={sendWord}>Generate!</button>
+                    </div>
+                </div>
+                <div className="col-right">
+                    {inputValue && renderedValue > 0 &&
+                        <WorkArea key={renderedValue} text={inputValue.toUpperCase()}/>
+                    }
+                </div>
+            </div>
         </div>
     );
 }

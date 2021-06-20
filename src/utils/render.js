@@ -5,39 +5,22 @@ const protection = 50000;
 const colorsRed = ["#f49427", "#c9785c", "#fece00", "#f1b181"];
 const colorsGreen = ["#7ba55e", "#89b370", "#b6c674"];
 
-// const colorsRed = ["#d98b8b"];
-// const colorsGreen = ["#000000"];
 
-
-
+// For generate more big circles
 const generateBigCircles = (fontSize) => {
     return [fontSize / 20, fontSize / 25, fontSize / 30, fontSize / 35];
 }
 
+// For generate less small circles, its more beautiful, trust
 const generateSmallCircles = (fontSize) => {
     return [fontSize / 50, fontSize / 60];
 }
-
-export const checkBordersSquare = circle => {
-    if (circle.x + circle.r > width) {
-        return false;
-    }
-
-    if (circle.y + circle.r > height) {
-        return false;
-    }
-
-    if (circle.x - circle.r < 0) {
-        return false;
-    }
-
-    return circle.y - circle.r >= 0;
-};
 
 export const checkBordersCircle = (circle, p5) => {
     return p5.dist(circle.x, circle.y, width / 2, width / 2) + circle.r <= (width / 2);
 }
 
+// Generating all circles in the text and area
 export function generateCircles(p5, text) {
     let circles = [];
 
@@ -47,6 +30,7 @@ export function generateCircles(p5, text) {
         [, fontSizeForCircles] = createVirtualText(p5, "aaa");
     }
 
+    //circle size is based on text length, so we need to fix circles number based on the same parameter
     const totalNumber = text.length * 2000;
 
     let forBigCircles = generateBigCircles(fontSizeForCircles);
@@ -61,10 +45,14 @@ export function generateCircles(p5, text) {
     return circles;
 }
 
+export function getColorForUnblind(unblind, circle) {
+    return unblind ? (colorsRed.includes(circle.color) ? "#d98b8b" : "#000000") : circle.color;
+}
+
 export const drawAllCircles = (p5, circles, unblind) => {
     for (let i = 0; i < circles.length; i++) {
         let circle = circles[i];
-        let color = unblind ? (colorsRed.includes(circle.color) ? "#d98b8b" : "#000000") : circle.color;
+        let color = getColorForUnblind(unblind, circle);
         p5.fill(color);
         p5.ellipse(circle.x, circle.y,
             circle.r * 2, circle.r * 2);
@@ -118,6 +106,15 @@ function getmeSomeValue() {
     return false;
 }
 
+/**
+ *
+ * @param p5 - rendering context
+ * @param {Array<*>} acceptableRadius - array of possible radius depends of text size
+ * @param {Array<string>} colors - array of possible colors
+ * @param {Array<*>} circles - collect all circles in general array
+ * @param {function(p): boolean} checkBorders - checking that the circles fit into the text
+ * @param {number} totalNumber - how many circles will there be in the final drawing
+ */
 export const generate = (p5, acceptableRadius, colors, circles, checkBorders, totalNumber) => {
     let counter = 0;
 
@@ -156,3 +153,4 @@ export const generate = (p5, acceptableRadius, colors, circles, checkBorders, to
         counter++;
     }
 }
+
