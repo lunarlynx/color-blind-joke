@@ -1,6 +1,5 @@
 export const width = 700;
 export const height = 700;
-const totalNumber = 2000;
 const protection = 50000;
 
 const colorsRed = ["#f49427", "#c9785c", "#fece00", "#f1b181"];
@@ -48,15 +47,17 @@ export function generateCircles(p5, text) {
         [, fontSizeForCircles] = createVirtualText(p5, "aaa");
     }
 
+    const totalNumber = text.length * 2000;
+
     let forBigCircles = generateBigCircles(fontSizeForCircles);
     let forSmallCircles = generateSmallCircles(fontSizeForCircles);
-    generateText(p5, pg, forBigCircles, circles, text);
-    generateText(p5, pg, forSmallCircles, circles, text);
+    generate(p5, forBigCircles, colorsGreen, circles, getCheckBordersText(pg, true), totalNumber);
+    generate(p5, forSmallCircles, colorsGreen, circles, getCheckBordersText(pg, true), totalNumber);
 
     let checkBorders = (circle, p5) => checkBordersCircle(circle, p5) && getCheckBordersText(pg, false)(circle);
 
-    generate(p5, forBigCircles, colorsRed, circles, checkBorders);
-    generate(p5, forSmallCircles, colorsRed, circles, checkBorders);
+    generate(p5, forBigCircles, colorsRed, circles, checkBorders, totalNumber);
+    generate(p5, forSmallCircles, colorsRed, circles, checkBorders, totalNumber);
     return circles;
 }
 
@@ -77,18 +78,11 @@ function getCheckBordersText(pg, eq) {
         return result === eq;
     };
 }
-
-function generateText(p5, pg, numbers, circles) {
-    generate(p5, numbers, colorsGreen, circles, getCheckBordersText(pg, true));
-}
-
-
 function createVirtualText(p5, text) {
     const pg = p5.createGraphics(width, height);
 
     pg.background("transparent");
     pg.textFont('Arial');
-    pg.textStyle(p5.BOLD);
 
     let fontSize = getFontSize(pg, text);
     pg.textSize(fontSize);
@@ -124,7 +118,7 @@ function getmeSomeValue() {
     return false;
 }
 
-export const generate = (p5, acceptableRadius, colors, circles, checkBorders) => {
+export const generate = (p5, acceptableRadius, colors, circles, checkBorders, totalNumber) => {
     let counter = 0;
 
     // populate circles array
@@ -145,7 +139,7 @@ export const generate = (p5, acceptableRadius, colors, circles, checkBorders) =>
             for (let i = 0; i < circles.length; i++) {
                 const existing = circles[i];
                 const distance = p5.dist(circle.x, circle.y, existing.x, existing.y);
-                if (distance < circle.r + existing.r + 2) {
+                if (distance < circle.r + existing.r + 1) {
                     // They are overlapping
                     overlapping = true;
                     // do not add to array
