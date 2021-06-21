@@ -38,7 +38,7 @@ function App() {
                     </div>
                 </div>
                 <div className="col-right">
-                    {inputValue && renderedValue > 0 &&
+                    {renderedValue > 0 &&
                         <WorkArea key={renderedValue} text={inputValue.toUpperCase()}/>
                     }
                 </div>
