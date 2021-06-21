@@ -2,15 +2,18 @@
 
 This project was created exclusively just for fun. If you have color blind friends (red-green) and want to give them a funny picture T-shirt, create an SVG template in two clicks.
 
+#### Example of the generated image (you may try unicode):
+![Example blind](md/blind.png)
+
+#### In case if you don't see the symbol, it is the unblind version:
+![Example unblind](md/unblind.png)
+
 download template in:
 #### svg
 #### png
 
 ### Warning!
 Your color blind friends are unlikely to appreciate this joke.
-
-![Example blind](md/blind.png)
-![Example unblind](md/unblind.png)
 
 ## Running the application locally
 
