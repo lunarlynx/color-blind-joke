@@ -23,7 +23,7 @@ function App() {
             <div className="container">
                 <div className="col-left">
                     <a href="#" className="logo">
-                        <img src="./logo.svg" width="50" height="50"/>
+                        <img src="./logo.png" width="50" height="50"/>
                         <span>color-blind-joke</span>
                     </a>
                     <div className="form">
