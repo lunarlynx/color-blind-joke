@@ -9,8 +9,8 @@ download template in:
 ### Warning!
 Your color blind friends are unlikely to appreciate this joke.
 
-![Example blind](md/blind.png | 50%)
-![Example unblind](md/unblind.png | 50%)
+![Example blind](md/blind.png)
+![Example unblind](md/unblind.png)
 
 ## Running the application locally
 
