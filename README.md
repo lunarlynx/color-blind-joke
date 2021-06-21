@@ -9,6 +9,9 @@ download template in:
 ### Warning!
 Your color blind friends are unlikely to appreciate this joke.
 
+![Example blind](md/blind.png | 50%)
+![Example unblind](md/unblind.png | 50%)
+
 ## Running the application locally
 
 In the project directory, you can run:
