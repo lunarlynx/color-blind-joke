@@ -2,6 +2,8 @@
 
 This project was created exclusively just for fun. If you have color blind friends (red-green) and want to give them a funny picture T-shirt, create an SVG template in two clicks.
 
+**[TRY IT OUT](https://lunarlynx.github.io/color-blind-joke/)**
+
 #### Example of the generated image (you may try unicode):
 ![Example blind](md/blind.png)
 
