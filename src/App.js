@@ -1,6 +1,7 @@
 import './App.css';
 import WorkArea from './WorkArea/WorkArea';
 import {useState} from "react";
+import Loader from "react-loader-spinner";
 
 function App() {
 
@@ -39,7 +40,9 @@ function App() {
                 </div>
                 <div className="col-right">
                     {renderedValue > 0 &&
+                    <>
                         <WorkArea key={renderedValue} text={inputValue.toUpperCase()}/>
+                    </>
                     }
                 </div>
             </div>
