@@ -1,13 +1,25 @@
 import Sketch from "react-p5";
-import p5Raw from 'p5';
-import {useState} from "react";
-import {drawAllCircles, generateCircles, getColorForUnblind, height, width} from "../utils/render";
+import {useEffect, useState} from "react";
+import {drawAllCircles, getColorForUnblind, height, width} from "../utils/render";
 import C2S from "canvas2svg";
 import Loader from "react-loader-spinner";
-import circleWorker from "./circle-worker";
-import {WebWorker} from "./initWorker";
+import {createWorkerFactory, useWorker} from '@shopify/react-web-worker';
+
+const createWorker = createWorkerFactory(() => import('./circle-worker'));
 
 const WorkArea = ({text}) => {
+        const worker = useWorker(createWorker);
+        useEffect(() => {
+            (async () => {
+                let workerEl = worker.circleWorker();
+                workerEl.onmessage = (event) => {
+                    const {circles} = event.data;
+                    setOurCircles(circles);
+                }
+                workerEl.postMessage({text});
+            })();
+        }, [worker]);
+
         const downloadPNGHandler = async () => {
             const canvas = document.querySelector('canvas');
             const img = canvas.toDataURL("image/png"); //converts to base64
@@ -63,13 +75,6 @@ const WorkArea = ({text}) => {
             }
 
             return ctx.getSerializedSvg();
-        }
-
-        const worker = WebWorker(circleWorker);
-        worker.postMessage({text, p5Raw, generateCircles});
-        worker.onmessage = (event) => {
-            const {circles} = event.data;
-            setOurCircles(circles);
         }
 
         const hasCircles = ourCircles.length > 0;
