@@ -1,6 +1,6 @@
 # Hello!
 
-This project was created exclusively just for fun. If you have color blind friends and want to give them a funny picture T-shirt, create an SVG template in two clicks.
+This project was created exclusively just for fun. If you have color blind friends (red-green) and want to give them a funny picture T-shirt, create an SVG template in two clicks.
 
 download template in:
 #### svg
