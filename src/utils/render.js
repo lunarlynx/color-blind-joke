@@ -1,10 +1,11 @@
+import p5raw from 'p5';
+
 export const width = 700;
 export const height = 700;
-const protection = 50000;
 
+const protection = 50000;
 const colorsRed = ["#f49427", "#c9785c", "#fece00", "#f1b181"];
 const colorsGreen = ["#7ba55e", "#89b370", "#b6c674"];
-
 
 // For generate more big circles
 const generateBigCircles = (fontSize) => {
@@ -22,6 +23,7 @@ export const checkBordersCircle = (circle, p5) => {
 
 // Generating all circles in the text and area
 export function generateCircles(p5, text) {
+    p5 = new p5raw(() => {});
     let circles = [];
 
     let [pg, fontSize] = createVirtualText(p5, text);
