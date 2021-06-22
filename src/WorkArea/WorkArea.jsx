@@ -2,23 +2,20 @@ import Sketch from "react-p5";
 import {useEffect, useState} from "react";
 import {drawAllCircles, getColorForUnblind, height, width} from "../utils/render";
 import C2S from "canvas2svg";
+import Worker from "./circle.worker";
 import Loader from "react-loader-spinner";
-import {createWorkerFactory, useWorker} from '@shopify/react-web-worker';
-
-const createWorker = createWorkerFactory(() => import('./circle-worker'));
 
 const WorkArea = ({text}) => {
-        const worker = useWorker(createWorker);
         useEffect(() => {
             (async () => {
-                let workerEl = worker.circleWorker();
-                workerEl.onmessage = (event) => {
+                const worker = new Worker();
+                worker.onmessage = (event) => {
                     const {circles} = event.data;
                     setOurCircles(circles);
                 }
-                workerEl.postMessage({text});
+                worker.postMessage({text});
             })();
-        }, [worker]);
+        });
 
         const downloadPNGHandler = async () => {
             const canvas = document.querySelector('canvas');

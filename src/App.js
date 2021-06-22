@@ -1,7 +1,6 @@
 import './App.css';
 import WorkArea from './WorkArea/WorkArea';
 import {useState} from "react";
-import Loader from "react-loader-spinner";
 
 function App() {
 
