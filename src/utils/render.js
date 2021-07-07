@@ -1,5 +1,3 @@
-import p5raw from 'p5';
-
 export const width = 700;
 export const height = 700;
 
@@ -17,19 +15,20 @@ const generateSmallCircles = (fontSize) => {
     return [fontSize / 50, fontSize / 60];
 }
 
-export const checkBordersCircle = (circle, p5) => {
-    return p5.dist(circle.x, circle.y, width / 2, width / 2) + circle.r <= (width / 2);
+export const checkBordersCircle = (circle) => {
+    return Math.hypot(circle.x - (width / 2), circle.y - (width / 2)) + circle.r <= (width / 2)
 }
 
 // Generating all circles in the text and area
-export function generateCircles(p5, text) {
-    p5 = new p5raw(() => {});
+export function generateCircles(text) {
     let circles = [];
 
-    let [pg, fontSize] = createVirtualText(p5, text);
+    console.log("before VT")
+    let [ctx, fontSize] = createVirtualText(text);
+    console.log("after VT " + fontSize)
     let fontSizeForCircles = fontSize;
     if (text.length <= 2) {
-        [, fontSizeForCircles] = createVirtualText(p5, "aaa");
+        [, fontSizeForCircles] = createVirtualText("aaa");
     }
 
     //circle size is based on text length, so we need to fix circles number based on the same parameter
@@ -37,13 +36,13 @@ export function generateCircles(p5, text) {
 
     let forBigCircles = generateBigCircles(fontSizeForCircles);
     let forSmallCircles = generateSmallCircles(fontSizeForCircles);
-    generate(p5, forBigCircles, colorsGreen, circles, getCheckBordersText(pg, true), totalNumber);
-    generate(p5, forSmallCircles, colorsGreen, circles, getCheckBordersText(pg, true), totalNumber);
+    generate(forBigCircles, colorsGreen, circles, getCheckBordersText(ctx, true), totalNumber);
+    generate(forSmallCircles, colorsGreen, circles, getCheckBordersText(ctx, true), totalNumber);
 
-    let checkBorders = (circle, p5) => checkBordersCircle(circle, p5) && getCheckBordersText(pg, false)(circle);
+    let checkBorders = (circle) => checkBordersCircle(circle) && getCheckBordersText(ctx, false)(circle);
 
-    generate(p5, forBigCircles, colorsRed, circles, checkBorders, totalNumber);
-    generate(p5, forSmallCircles, colorsRed, circles, checkBorders, totalNumber);
+    generate(forBigCircles, colorsRed, circles, checkBorders, totalNumber);
+    generate(forSmallCircles, colorsRed, circles, checkBorders, totalNumber);
     return circles;
 }
 
@@ -51,73 +50,74 @@ export function getColorForUnblind(unblind, circle) {
     return unblind ? (colorsRed.includes(circle.color) ? "#d98b8b" : "#000000") : circle.color;
 }
 
-export const drawAllCircles = (p5, circles, unblind) => {
-    for (let i = 0; i < circles.length; i++) {
-        let circle = circles[i];
-        let color = getColorForUnblind(unblind, circle);
-        p5.fill(color);
-        p5.ellipse(circle.x, circle.y,
-            circle.r * 2, circle.r * 2);
-    }
-};
-
-function getCheckBordersText(pg, eq) {
+function getCheckBordersText(ctx, eq) {
     return (circle) => {
-        let ourCircleColors = pg.get(circle.x, circle.y);
+        let ourCircleColors = ctx.getImageData(circle.x, circle.y, 1, 1).data
         let result = ourCircleColors[0] === 0;
         return result === eq;
     };
 }
-function createVirtualText(p5, text) {
-    const pg = p5.createGraphics(width, height);
 
-    pg.background("transparent");
-    pg.textFont('Arial');
+function getFont(fontSize) {
+    return `${fontSize}px Arial`;
+}
 
-    let fontSize = getFontSize(pg, text);
-    pg.textSize(fontSize);
+function createVirtualText(text) {
+    const offscreenCanvas = new OffscreenCanvas(width, height);
+    const ctx = offscreenCanvas.getContext("2d");
 
-    let textWidth = pg.textWidth(text);
-    let textHeight = pg.textWidth("М");
+    const fontSize = getFontSize(ctx, text);
+    ctx.font = getFont(fontSize);
+
+    let textWidth = getTextWidth(ctx, text);
+    // noinspection JSSuspiciousNameCombination
+    let textHeight = getTextWidth(ctx, "M");
 
     let xStart = (width / 2) - (textWidth / 2);
     let yStart = (height / 2) + (textHeight / 2);
-    pg.text(text, xStart, yStart);
-    return [pg, fontSize];
+    ctx.fillText(text, xStart, yStart);
+    return [ctx, fontSize];
 }
 
-function getFontSize(p5, text) {
+function getTextWidth(ctx, text) {
+    return ctx.measureText(text).width;
+}
+
+function getFontSize(ctx, text) {
     let candidate = 5;
+    let iterations = 0;
     while (true) {
-        p5.textSize(candidate + 1);
-        let textWidth = p5.textWidth(text);
-        let textHeight = p5.textWidth("М");
+        if (++iterations > 1000) throw new Error(iterations.toString())
+        ctx.font = getFont(candidate + 1);
+        let textWidth = getTextWidth(ctx, text);
+        let textHeight = getTextWidth(ctx, "M");
         let xStart = (width / 2) - (textWidth / 2);
         let yStart = (height / 2) + (textHeight / 2);
 
-        if (p5.dist(width / 2, height / 2, xStart, yStart) <= width / 2) {
-            candidate = candidate + 1;
-        } else {
+        if (Math.hypot((width / 2) - xStart, (height / 2) - yStart) > width / 2) {
             return candidate;
         }
+        candidate = candidate + 1;
     }
 }
 
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+}
 
-function getmeSomeValue() {
-    return false;
+function getRandomFromArray(array) {
+    return array[getRandomInt(array.length)]
 }
 
 /**
  *
- * @param p5 - rendering context
  * @param {Array<*>} acceptableRadius - array of possible radius depends of text size
  * @param {Array<string>} colors - array of possible colors
  * @param {Array<*>} circles - collect all circles in general array
- * @param {function(p): boolean} checkBorders - checking that the circles fit into the text
+ * @param {function(any): boolean} checkBorders - checking that the circles fit into the text
  * @param {number} totalNumber - how many circles will there be in the final drawing
  */
-export const generate = (p5, acceptableRadius, colors, circles, checkBorders, totalNumber) => {
+export const generate = (acceptableRadius, colors, circles, checkBorders, totalNumber) => {
     let counter = 0;
 
     // populate circles array
@@ -125,19 +125,19 @@ export const generate = (p5, acceptableRadius, colors, circles, checkBorders, to
     // or until the protection value is reached
     while (circles.length < totalNumber && counter < protection) {
         let circle = {
-            x: p5.random(width),
-            y: p5.random(height),
-            r: p5.random(acceptableRadius),
-            color: p5.random(colors)
+            x: getRandomInt(width),
+            y: getRandomInt(height),
+            r: getRandomFromArray(acceptableRadius),
+            color: getRandomFromArray(colors)
         };
-        let overlapping = getmeSomeValue();
+        let overlapping = false;
 
-        if (!checkBorders(circle, p5)) {
+        if (!checkBorders(circle)) {
             overlapping = true;
         } else {
             for (let i = 0; i < circles.length; i++) {
                 const existing = circles[i];
-                const distance = p5.dist(circle.x, circle.y, existing.x, existing.y);
+                const distance = Math.hypot(circle.x - existing.x, circle.y - existing.y);
                 if (distance < circle.r + existing.r + 1) {
                     // They are overlapping
                     overlapping = true;
