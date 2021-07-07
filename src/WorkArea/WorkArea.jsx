@@ -1,6 +1,6 @@
 import Sketch from "react-p5";
 import {useEffect, useState} from "react";
-import {drawAllCircles, getColorForUnblind, height, width} from "../utils/render";
+import {getColorForUnblind, height, width} from "../utils/render";
 import C2S from "canvas2svg";
 import Worker from "./circle.worker";
 import Loader from "react-loader-spinner";
@@ -98,6 +98,16 @@ const WorkArea = ({text}) => {
             </>)
     }
 ;
+
+export const drawAllCircles = (p5, circles, unblind) => {
+    for (let i = 0; i < circles.length; i++) {
+        let circle = circles[i];
+        let color = getColorForUnblind(unblind, circle);
+        p5.fill(color);
+        p5.ellipse(circle.x, circle.y,
+            circle.r * 2, circle.r * 2);
+    }
+};
 
 
 export default WorkArea;
