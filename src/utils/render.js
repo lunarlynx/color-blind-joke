@@ -16,19 +16,21 @@ const generateSmallCircles = (fontSize) => {
 }
 
 export const checkBordersCircle = (circle) => {
-    return Math.hypot(circle.x - (width / 2), circle.y - (width / 2)) + circle.r <= (width / 2)
+    return Math.hypot(circle.x - (width / 2), circle.y - (height / 2)) + circle.r <= (width / 2)
+}
+
+function getRedColorOfPixel(data, circle) {
+    return data[(circle.y * (width * 4) + circle.x * 4) + 3];
 }
 
 // Generating all circles in the text and area
 export function generateCircles(text) {
     let circles = [];
 
-    console.log("before VT")
     let [ctx, fontSize] = createVirtualText(text);
-    console.log("after VT " + fontSize)
     let fontSizeForCircles = fontSize;
     if (text.length <= 2) {
-        [, fontSizeForCircles] = createVirtualText("aaa");
+        fontSizeForCircles = getFontSize(ctx, "aaa")
     }
 
     //circle size is based on text length, so we need to fix circles number based on the same parameter
@@ -36,11 +38,19 @@ export function generateCircles(text) {
 
     let forBigCircles = generateBigCircles(fontSizeForCircles);
     let forSmallCircles = generateSmallCircles(fontSizeForCircles);
-    generate(forBigCircles, colorsGreen, circles, getCheckBordersText(ctx, true), totalNumber);
-    generate(forSmallCircles, colorsGreen, circles, getCheckBordersText(ctx, true), totalNumber);
 
-    let checkBorders = (circle) => checkBordersCircle(circle) && getCheckBordersText(ctx, false)(circle);
+    let data = ctx.getImageData(0, 0, width, height).data;
 
+    let non = 0;
+    for (let i = 4; i < data.length; i+= 4) {
+        if (data[i] !== 0) non++;
+    }
+    console.log("non-zero ref pixels " + non);
+
+    generate(forBigCircles, colorsGreen, circles, getCheckBordersText(data, false), totalNumber);
+    generate(forSmallCircles, colorsGreen, circles, getCheckBordersText(data, false), totalNumber);
+
+    let checkBorders = (circle) => checkBordersCircle(circle) && getCheckBordersText(data, true)(circle);
     generate(forBigCircles, colorsRed, circles, checkBorders, totalNumber);
     generate(forSmallCircles, colorsRed, circles, checkBorders, totalNumber);
     return circles;
@@ -50,10 +60,9 @@ export function getColorForUnblind(unblind, circle) {
     return unblind ? (colorsRed.includes(circle.color) ? "#d98b8b" : "#000000") : circle.color;
 }
 
-function getCheckBordersText(ctx, eq) {
+function getCheckBordersText(data, eq) {
     return (circle) => {
-        let ourCircleColors = ctx.getImageData(circle.x, circle.y, 1, 1).data
-        let result = ourCircleColors[0] === 0;
+        let result = getRedColorOfPixel(data, circle) === 0;
         return result === eq;
     };
 }

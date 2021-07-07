@@ -5,17 +5,21 @@ import C2S from "canvas2svg";
 import Worker from "./circle.worker";
 import Loader from "react-loader-spinner";
 
+const worker = new Worker();
+
 const WorkArea = ({text}) => {
+        const [ourCircles, setOurCircles] = useState([]);
+
         useEffect(() => {
             (async () => {
-                const worker = new Worker();
+
                 worker.onmessage = (event) => {
                     const {circles} = event.data;
                     setOurCircles(circles);
                 }
                 worker.postMessage({text});
             })();
-        });
+        }, []);
 
         const downloadPNGHandler = async () => {
             const canvas = document.querySelector('canvas');
@@ -34,10 +38,8 @@ const WorkArea = ({text}) => {
             a.click();
         }
 
-        const [ourCircles, setOurCircles] = useState([]);
-        const [unblind, setUnblind] = useState(false);
-        const [startCalculated, setStartCalculated] = useState(false);
 
+        const [unblind, setUnblind] = useState(false);
 
         // Initialization of canvas
         const setup = (p5, canvasParentRef) => {
