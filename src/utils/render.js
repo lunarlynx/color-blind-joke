@@ -24,11 +24,10 @@ function getRedColorOfPixel(data, circle) {
 }
 
 // Generating all circles in the text and area
-export function generateCircles(text) {
+export function generateCircles(text, ctx = getContext()) {
     let circles = [];
 
-    let [ctx, fontSize] = createVirtualText(text);
-    let fontSizeForCircles = fontSize;
+    let fontSizeForCircles = createVirtualText(ctx, text);
     if (text.length <= 2) {
         fontSizeForCircles = getFontSize(ctx, "aaa")
     }
@@ -42,7 +41,7 @@ export function generateCircles(text) {
     let data = ctx.getImageData(0, 0, width, height).data;
 
     let non = 0;
-    for (let i = 4; i < data.length; i+= 4) {
+    for (let i = 3; i < data.length; i += 4) {
         if (data[i] !== 0) non++;
     }
     console.log("non-zero ref pixels " + non);
@@ -71,10 +70,12 @@ function getFont(fontSize) {
     return `${fontSize}px Arial`;
 }
 
-function createVirtualText(text) {
+function getContext() {
     const offscreenCanvas = new OffscreenCanvas(width, height);
-    const ctx = offscreenCanvas.getContext("2d");
+    return offscreenCanvas.getContext("2d");
+}
 
+function createVirtualText(ctx, text) {
     const fontSize = getFontSize(ctx, text);
     ctx.font = getFont(fontSize);
 
@@ -85,7 +86,7 @@ function createVirtualText(text) {
     let xStart = (width / 2) - (textWidth / 2);
     let yStart = (height / 2) + (textHeight / 2);
     ctx.fillText(text, xStart, yStart);
-    return [ctx, fontSize];
+    return fontSize;
 }
 
 function getTextWidth(ctx, text) {

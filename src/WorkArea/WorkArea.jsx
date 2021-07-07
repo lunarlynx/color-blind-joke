@@ -1,24 +1,35 @@
 import Sketch from "react-p5";
 import {useEffect, useState} from "react";
-import {getColorForUnblind, height, width} from "../utils/render";
+import {generateCircles, getColorForUnblind, height, width} from "../utils/render";
 import C2S from "canvas2svg";
 import Worker from "./circle.worker";
 import Loader from "react-loader-spinner";
 
 const worker = new Worker();
 
+function createFakeContext() {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    return canvas.getContext("2d");
+}
+
 const WorkArea = ({text}) => {
         const [ourCircles, setOurCircles] = useState([]);
 
         useEffect(() => {
-            (async () => {
+            if (typeof OffscreenCanvas == "undefined") {
+                setOurCircles(generateCircles(text, createFakeContext()))
+            } else {
+                (async () => {
+                    worker.onmessage = (event) => {
+                        const {circles} = event.data;
+                        setOurCircles(circles);
+                    }
 
-                worker.onmessage = (event) => {
-                    const {circles} = event.data;
-                    setOurCircles(circles);
-                }
-                worker.postMessage({text});
-            })();
+                    worker.postMessage({text});
+                })();
+            }
         }, []);
 
         const downloadPNGHandler = async () => {
