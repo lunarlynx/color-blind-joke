@@ -18,7 +18,8 @@ const WorkArea = ({text}) => {
         const [ourCircles, setOurCircles] = useState([]);
 
         useEffect(() => {
-            if (typeof OffscreenCanvas == "undefined") {
+            if (typeof OffscreenCanvas == "undefined" ||
+                typeof global.Worker == "undefined") {
                 setOurCircles(generateCircles(text, createFakeContext()))
             } else {
                 (async () => {
